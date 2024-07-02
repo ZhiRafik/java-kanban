@@ -2,6 +2,7 @@ import java.util.ArrayList;
 public class Epic extends Task{
     ArrayList<Subtask> subtasks = new ArrayList<>();
     private Status taskStatus;
+
     public Epic(String taskName, String taskDescription, int taskID, Status taskStatus) {
         super(taskName, taskDescription, taskID, taskStatus);
         this.taskStatus = taskStatus;
@@ -9,10 +10,6 @@ public class Epic extends Task{
 
     public ArrayList<Subtask> getSubtasks() {
         return subtasks;
-    }
-
-    public void printSubtasks() {
-        System.out.println(subtasks.toString());
     }
 
     public void addSubtask(Subtask subtask) {
