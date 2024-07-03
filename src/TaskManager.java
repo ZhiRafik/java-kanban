@@ -8,19 +8,25 @@ public class TaskManager {
     int newID = 0; //сохраняем последний созданный ID, базовый - минимальное значение типа int
 
     public int createNewID(int lastID) { //вводим текущий ID в lastID
-        if (lastID == 2_147_483_647){
-            int newID = 0; //избегаем выхода за пределы int
-        }
-        newID++;
-        return newID; //получили новый ID на единицу больше
+        return newID++; //получили новый ID на единицу больше
     }
 
     public ArrayList<Task> getAllTasks() {
         ArrayList<Task> allTasks = new ArrayList<>();
         allTasks.addAll(tasks.values());
-        allTasks.addAll(subtasks.values());
-        allTasks.addAll(epics.values());
         return allTasks;
+    }
+
+    public ArrayList<Subtask> getAllSubtasks() {
+        ArrayList<Subtask> allSubtasks = new ArrayList<>();
+        allSubtasks.addAll(subtasks.values());
+        return allSubtasks;
+    }
+
+    public ArrayList<Epic> getAllEpics() {
+        ArrayList<Epic> allEpics = new ArrayList<>();
+        allEpics.addAll(epics.values());
+        return allEpics;
     }
 
     public void removeAllTasks() {
@@ -31,8 +37,8 @@ public class TaskManager {
         subtasks.clear();
         for (Map.Entry<Integer, Epic> set : epics.entrySet()) {
             Epic currentEpic = set.getValue();
-            currentEpic.checkStatus();
             currentEpic.getSubtasks().clear();
+            currentEpic.checkStatus();
         }
     }
 
@@ -45,21 +51,21 @@ public class TaskManager {
         return(tasks.get(ID));
     }
 
-    public void createNewTask(String taskName, String taskDescription, Status taskStatus) {
+    public void createNewTask(Task task) {
         newID = createNewID(newID);
-        Task task = new Task(taskName, taskDescription, newID, taskStatus);
+        task.setID(newID);
         tasks.put(newID, task);
     }
 
-    public void createNewEpic(String epicName, String epicDescription, Status epicStatus) {
+    public void createNewEpic(Epic epic) {
         newID = createNewID(newID);
-        Epic epic = new Epic(epicName, epicDescription, newID, epicStatus);
+        epic.setID(newID);
         epics.put(newID, epic);
     }
 
-    public void createNewSubtask(Epic epic, String subtaskName, String subtaskDescription, Status subtaskStatus) {
+    public void createNewSubtask(Subtask subtask) {
         newID = createNewID(newID);
-        Subtask subtask = new Subtask(epic, subtaskName, subtaskDescription, newID, subtaskStatus);
+        subtask.setID(newID);
         subtasks.put(newID, subtask);
     }
 
