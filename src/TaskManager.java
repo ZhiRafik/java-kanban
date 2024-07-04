@@ -7,10 +7,6 @@ public class TaskManager {
     HashMap<Integer, Epic> epics = new HashMap<>();
     int newID = 0; //сохраняем последний созданный ID, базовый - минимальное значение типа int
 
-    public int createNewID(int lastID) { //вводим текущий ID в lastID
-        return newID++; //получили новый ID на единицу больше
-    }
-
     public ArrayList<Task> getAllTasks() {
         ArrayList<Task> allTasks = new ArrayList<>();
         allTasks.addAll(tasks.values());
@@ -107,5 +103,9 @@ public class TaskManager {
 
     public ArrayList<Subtask> getSubtasksFromEpic(Epic epic) {
         return epic.getSubtasks();
+    }
+
+    private int createNewID(int lastID) { //вводим текущий ID в lastID
+        return newID++; //получили новый ID на единицу больше
     }
 }
