@@ -17,4 +17,13 @@ public class Task {
     public void setID(int ID) {
         this.taskID = ID;
     }
+
+    @Override // перепишем метод эквивалентности объектов для тестировки
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return taskName.equals(task.taskName) && taskDescription.equals(task.taskDescription) && taskID == task.getID()
+                && taskStatus.equals(task.taskStatus);
+    }
 }

@@ -2,9 +2,10 @@ import java.util.ArrayList;
 public class Epic extends Task{
     ArrayList<Subtask> subtasks = new ArrayList<>();
     private Status taskStatus;
+    private int taskID;
 
-    public Epic(String taskName, String taskDescription, int taskID, Status taskStatus) {
-        super(taskName, taskDescription, taskID, taskStatus);
+    public Epic(String taskName, String taskDescription, Status taskStatus) {
+        super(taskName, taskDescription, taskStatus);
         this.taskStatus = taskStatus;
     }
 
@@ -13,6 +14,9 @@ public class Epic extends Task{
     }
 
     public void addSubtask(Subtask subtask) {
+        if (subtask.getID() == this.taskID) {
+            throw new IllegalArgumentException("You cannot add epic as it's own subtask");
+        }
         subtasks.add(subtask);
     }
 
