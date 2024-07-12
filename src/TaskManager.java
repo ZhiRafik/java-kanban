@@ -40,6 +40,4 @@ public interface TaskManager {
     ArrayList<Task> getHistory();
 
     ArrayList<Subtask> getSubtasksFromEpic(Epic epic);
-
-    int createNewID(int lastID);
 }
