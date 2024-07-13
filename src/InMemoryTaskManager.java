@@ -136,7 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
         return epic.getSubtasks();
     }
 
-    public int createNewID(int lastID) {
+    private int createNewID(int lastID) {
         newID++;
         return newID;
     }
