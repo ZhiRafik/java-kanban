@@ -136,13 +136,13 @@ public class InMemoryTaskManager implements TaskManager {
         return epic.getSubtasks();
     }
 
-    private int createNewID(int lastID) {
-        newID++;
-        return newID;
-    }
-
     @Override
     public ArrayList<Task> getHistory() {
         return inMemoryHistoryManager.getHistory();
+    }
+
+    private int createNewID(int lastID) {
+        newID++;
+        return newID;
     }
 }
