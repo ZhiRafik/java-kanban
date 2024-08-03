@@ -13,11 +13,11 @@ public interface TaskManager {
 
     void removeAllEpics();
 
-    Task getTask(int Id);
+    Task getTask(int id);
 
-    Subtask getSubtask(int Id);
+    Subtask getSubtask(int id);
 
-    Epic getEpic(int Id);
+    Epic getEpic(int id);
 
     void createNewTask(Task task);
 
@@ -31,11 +31,11 @@ public interface TaskManager {
 
     void updateSubtask(Subtask task);
 
-    void removeTaskByID(int Id);
+    void removeTaskByID(int id);
 
-    void removeSubtaskByID(int Id);
+    void removeSubtaskByID(int id);
 
-    void removeEpicByID(int Id);
+    void removeEpicByID(int id);
 
     ArrayList<Task> getHistory();
 
