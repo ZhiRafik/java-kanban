@@ -5,33 +5,36 @@ import java.util.HashMap;
 public class InMemoryHistoryManager implements HistoryManager {
     HashMap<Integer, Node> taskHistory = new HashMap<>();
     LinkedList<Node> linkedTaskHistory = new LinkedList<>();
-    protected int newID = -1;
-    // создаём первый ID для taskHistory, изначально ставим -1, т.к. при первом добавлении ID будет увеличен на 1, до 0
 
     @Override
     public void add(Task task) {
-        if (taskHistory.containsValue(task)) {
-            Node node = taskHistory.get(task.getID());
+        if (taskHistory.containsValue(task)) { // если узел уже есть в истории, перезаписываем его в LinkedTaskHistory
+            Node containedNode = taskHistory.get(task.getID());
+            removeFromLinkedHistory(containedNode);
+            linkedTaskHistory.linkLast(containedNode);
+            return;
         }
-        newID++;
-        Node node = new Node(task, newID);
-        taskHistory.put(newID, node); //следи, чтобы дважды не добавил
+        Node node = new Node(task); // если узла ещё нет, то добавляем в taskHistory и LinkedTaskHistory
+        taskHistory.put(task.getID(), node);
         linkedTaskHistory.linkLast(node);
     }
 
     @Override
-    public void remove(int id) {
-        Node toRemoveNode = taskHistory.get(id); // узел, подлежащий удалению
-        Node nextNode = toRemoveNode.getNext(); // следующий от него узел
-        Node prevNode = toRemoveNode.getPrev(); // предыдущий узел
-        nextNode.setPrev(prevNode); // меням связь с (prevNode -> toRemoveNode -> NextNode)
-        prevNode.setNext(nextNode); // на связь (prevNode -> NextNode) - удаляем toRemoveNode из цепи LinkedTaskHistory
-        taskHistory.remove(id); // окончательно удалили Node из taskHistory
+    public void removeNode(Node node) {
+        removeFromLinkedHistory(node);
+        taskHistory.remove(node); // окончательно удалили Node из taskHistory
     }
 
     @Override
     public ArrayList<Task> getHistory() {
+        return linkedTaskHistory.getTasks();
+    }
 
+    public void removeFromLinkedHistory(Node toRemoveNode) {
+        Node nextNode = toRemoveNode.getNext(); // следующий от него узел
+        Node prevNode = toRemoveNode.getPrev(); // предыдущий узел
+        nextNode.setPrev(prevNode); // меням связь с (prevNode -> toRemoveNode -> NextNode)
+        prevNode.setNext(nextNode); // на связь (prevNode -> NextNode) => удаляем toRemoveNode из цепи LinkedTaskHistory
     }
 
     protected class LinkedList<E> {
