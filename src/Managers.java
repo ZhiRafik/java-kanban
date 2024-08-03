@@ -2,7 +2,7 @@ public final class Managers {
     private Managers() {
         //закрытый конструктор, чтобы запретить создание объектов этого класса
     }
-    
+
     public static TaskManager getDefault() {
         return new InMemoryTaskManager();
     }
