@@ -1,7 +1,7 @@
 public class Node {
     protected Task task;
-    protected Node nextE; //next Element - ID следующего элемента
-    protected Node prevE; //previous Element - ID предыдущего элемента
+    protected Node nextE; //next Element - следующий node
+    protected Node prevE; //previous Element - предыдущий node
     protected int nodeId;
 
     public Node (Task task) {
@@ -25,11 +25,11 @@ public class Node {
         return nextE;
     }
 
-    public void setNext(Node node) {
+    protected void setNext(Node node) {
         this.nextE = node;
     }
 
-    public void setPrev(Node node) {
+    protected void setPrev(Node node) {
         this.prevE = node;
     }
 

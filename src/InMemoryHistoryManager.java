@@ -8,7 +8,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (taskHistory.containsValue(task)) { // если узел уже есть в истории, перезаписываем его в LinkedTaskHistory
+        if (taskHistory.containsKey(task.getID())) { // если узел уже есть в истории, перезаписываем его в LinkedTaskHistory
+            // проверка идёт по ID, поскольку ID у узлов и задач - одинаковые, node берёт свой ID от task'a
             Node containedNode = taskHistory.get(task.getID());
             removeFromLinkedHistory(containedNode);
             linkedTaskHistory.linkLast(containedNode);
@@ -31,10 +32,22 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public void removeFromLinkedHistory(Node toRemoveNode) {
-        Node nextNode = toRemoveNode.getNext(); // следующий от него узел
-        Node prevNode = toRemoveNode.getPrev(); // предыдущий узел
-        nextNode.setPrev(prevNode); // меням связь с (prevNode -> toRemoveNode -> NextNode)
-        prevNode.setNext(nextNode); // на связь (prevNode -> NextNode) => удаляем toRemoveNode из цепи LinkedTaskHistory
+        if (toRemoveNode.getPrev() != null && toRemoveNode.getNext() != null) { // если внутри цепи
+            Node nextNode = toRemoveNode.getNext(); // следующий от него узел
+            Node prevNode = toRemoveNode.getPrev(); // предыдущий узел
+            nextNode.setPrev(prevNode); // меням связь с (prevNode -> toRemoveNode -> NextNode)
+            prevNode.setNext(nextNode); // на связь (prevNode -> NextNode) => удаляем toRemoveNode из цепи LinkedTaskHistory
+        } else if (toRemoveNode.getPrev() == null && toRemoveNode.getNext() != null) { // если первый элемент цепи
+            Node nextNode = toRemoveNode.getNext();
+            nextNode.setPrev(null);
+        } else if (toRemoveNode.getPrev() != null && toRemoveNode.getNext() == null) { // если последний элемент цепи
+            Node prevNode = toRemoveNode.getPrev();
+            linkedTaskHistory.head = prevNode;
+            prevNode.setNext(null);
+        } else { // единственный элемент
+            return;
+        }
+
     }
 
     protected class LinkedList<E> {

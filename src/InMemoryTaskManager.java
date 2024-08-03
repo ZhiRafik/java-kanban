@@ -87,6 +87,7 @@ public class InMemoryTaskManager implements TaskManager {
         newID = createNewID(newID);
         subtask.setID(newID);
         subtasks.put(newID, subtask);
+        subtask.getEpic().addSubtask(subtask); // добавляем в принадлежный эпик
     }
 
     @Override
@@ -125,7 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeEpicByID(int ID) {
         if (epics.containsKey(ID)) {
             for (Subtask subtask : epics.get(ID).getSubtasks()) { //получаем список сабтасков эпика и перебриваем его
-                subtasks.remove(subtask.getID()); //удаляем сабтаск их хэшмэп сабтасков
+                subtasks.remove(subtask.getID()); //удаляем сабтаск из хэшмэп сабтасков
             }
             epics.remove(ID);
         }
