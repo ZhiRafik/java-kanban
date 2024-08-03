@@ -88,7 +88,7 @@ public class TaskManagerTest {
     }
 
     @Test
-    void AllEpicsShouldBeRemoved() {
+    void allEpicsShouldBeRemoved() {
         taskManager.removeAllEpics();
         assertEquals(0, taskManager.getAllEpics().size());
     }
