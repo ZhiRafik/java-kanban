@@ -7,7 +7,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected HashMap<Integer, Task> tasks = new HashMap<>();
     protected HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected HashMap<Integer, Epic> epics = new HashMap<>();
-    protected int newID = 0; //сохраняем последний созданный ID, базовый - минимальное значение типа int
+    protected int newID = 0; //сохраняем последний созданный id, базовый - минимальное значение типа int
 
     @Override
     public ArrayList<Task> getAllTasks() {
@@ -52,21 +52,21 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTask(int ID) {
-        inMemoryHistoryManager.add(tasks.get(ID));
-        return (tasks.get(ID));
+    public Task getTask(int id) {
+        inMemoryHistoryManager.add(tasks.get(id));
+        return (tasks.get(id));
     }
 
     @Override
-    public Subtask getSubtask(int ID) {
-        inMemoryHistoryManager.add(subtasks.get(ID));
-        return (subtasks.get(ID));
+    public Subtask getSubtask(int id) {
+        inMemoryHistoryManager.add(subtasks.get(id));
+        return (subtasks.get(id));
     }
 
     @Override
-    public Epic getEpic(int ID) {
-        inMemoryHistoryManager.add(epics.get(ID));
-        return (epics.get(ID));
+    public Epic getEpic(int id) {
+        inMemoryHistoryManager.add(epics.get(id));
+        return (epics.get(id));
     }
 
     @Override
@@ -108,28 +108,28 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeTaskByID(int ID) {
-        if (tasks.containsKey(ID)) {
-            tasks.remove(ID);
+    public void removeTaskByID(int id) {
+        if (tasks.containsKey(id)) {
+            tasks.remove(id);
         }
     }
 
     @Override
-    public void removeSubtaskByID(int ID) {
-        if (subtasks.containsKey(ID)) {
-            int epicID = subtasks.get(ID).getEpic().getID(); //сохраняем id эпика сабтаска
-            subtasks.remove(ID);
+    public void removeSubtaskByID(int id) {
+        if (subtasks.containsKey(id)) {
+            int epicID = subtasks.get(id).getEpic().getID(); //сохраняем id эпика сабтаска
+            subtasks.remove(id);
             epics.get(epicID).checkStatus(); //проверяем статус эпика по сохраненному id после удаления сабтаска
         }
     }
 
     @Override
-    public void removeEpicByID(int ID) {
-        if (epics.containsKey(ID)) {
-            for (Subtask subtask : epics.get(ID).getSubtasks()) { //получаем список сабтасков эпика и перебриваем его
+    public void removeEpicByID(int id) {
+        if (epics.containsKey(id)) {
+            for (Subtask subtask : epics.get(id).getSubtasks()) { //получаем список сабтасков эпика и перебриваем его
                 subtasks.remove(subtask.getID()); //удаляем сабтаск из хэшмэп сабтасков
             }
-            epics.remove(ID);
+            epics.remove(id);
         }
     }
 
