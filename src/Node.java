@@ -4,7 +4,7 @@ public class Node {
     protected Node prevE; //previous Element - предыдущий node
     protected int nodeId;
 
-    public Node (Task task) {
+    public Node(Task task) {
         this.task = task;
         this.nodeId = task.getID();
     }

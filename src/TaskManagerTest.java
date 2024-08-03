@@ -85,7 +85,7 @@ public class TaskManagerTest {
         taskManager.removeAllSubtasks();
         assertEquals(0, taskManager.getAllSubtasks().size());
     }
-    
+
     @Test
     void AllEpicsShouldBeRemoved() {
         taskManager.removeAllEpics();
