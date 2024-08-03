@@ -8,7 +8,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         if (taskHistory.containsKey(task.getID())) { // если узел уже есть в истории, перезаписываем его в LinkedTaskHistory
-            // проверка идёт по ID, поскольку ID у узлов и задач - одинаковые, node берёт свой ID от task'a
+            // проверка идёт по id, поскольку id у узлов и задач - одинаковые, node берёт свой id от task'a
             Node containedNode = taskHistory.get(task.getID());
             removeFromLinkedHistory(containedNode);
             linkedTaskHistory.linkLast(containedNode);

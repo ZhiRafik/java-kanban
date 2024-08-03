@@ -14,8 +14,8 @@ public class Task {
         return taskID;
     }
 
-    public void setID(int ID) {
-        this.taskID = ID;
+    public void setID(int id) {
+        this.taskID = id;
     }
 
     @Override // перепишем метод эквивалентности объектов для тестировки
