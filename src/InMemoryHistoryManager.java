@@ -52,6 +52,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     protected class LinkedList<E> {
         private Node head;
+
         protected void linkLast(Node node) { // добавить узел, как новый ведущий (head)
             if (head == null) {
                 head = node;
