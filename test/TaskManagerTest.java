@@ -31,9 +31,10 @@ public class TaskManagerTest {
 
     @Test
     void subtasksShouldBeRemovedWithTheirEpic() {
-        taskManager.removeEpicByID(epicID);
-        ArrayList<Subtask> subtasks = taskManager.getAllSubtasks();
-        assertEquals(0, subtasks.size());
+        int currentNumberOfSubtasks = taskManager.getAllSubtasks().size();
+        taskManager.removeEpicByID(epicID); // epic имеет 2 subtask'a
+        int numberOfSubtasksAfterRemove = taskManager.getAllSubtasks().size();
+        assertEquals(currentNumberOfSubtasks - 2, numberOfSubtasksAfterRemove);
     }
 
 
