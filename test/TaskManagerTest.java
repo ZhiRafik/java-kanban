@@ -1,5 +1,3 @@
-package test;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,17 +39,17 @@ public class TaskManagerTest {
 
     @Test
     void inMemoryTaskManagerActuallyCreatesTasksAndCanFindThemByID() {
-        Assertions.assertEquals("getLunch", taskManager.getTask(firstTaskID).taskDescription);
+        assertEquals("getLunch", taskManager.getTask(firstTaskID).taskDescription);
     } //проверяем, что описание задачи вызванной по первому ID соответствует описанию задачи с первым ID
 
     @Test
     void tasksShouldBeEqualIfIDsEqual() {
-        Assertions.assertEquals(taskManager.getTask(firstTaskID), taskManager.getTask(firstTaskID));
+        assertEquals(taskManager.getTask(firstTaskID), taskManager.getTask(firstTaskID));
     }
 
     @Test
     void tasksShouldBeNotEqualIfIDsNotEqual() {
-        Assertions.assertNotEquals(taskManager.getTask(firstTaskID), taskManager.getTask(secondTaskID));
+        assertNotEquals(taskManager.getTask(firstTaskID), taskManager.getTask(secondTaskID));
     }
 
     @Test
@@ -87,13 +85,13 @@ public class TaskManagerTest {
     @Test
     void allSubtasksShouldBeRemoved() {
         taskManager.removeAllSubtasks();
-        Assertions.assertEquals(0, taskManager.getAllSubtasks().size());
+        assertEquals(0, taskManager.getAllSubtasks().size());
     }
 
     @Test
     void allEpicsShouldBeRemoved() {
         taskManager.removeAllEpics();
-        Assertions.assertEquals(0, taskManager.getAllEpics().size());
+        assertEquals(0, taskManager.getAllEpics().size());
     }
 
     @Test
@@ -101,7 +99,7 @@ public class TaskManagerTest {
         Epic epic2 = new Epic("epicTest2", "Test2", Status.IN_PROGRESS);
         taskManager.createNewEpic(epic2);
         taskManager.removeEpicByID(epicID); //удаляем изначальный эпик
-        Assertions.assertEquals(1, taskManager.getAllEpics().size());
+        assertEquals(1, taskManager.getAllEpics().size());
     }
 
 }
