@@ -1,5 +1,8 @@
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,8 +12,8 @@ public class TaskManagerTest {
     private static int epicID;
     private static TaskManager taskManager = Managers.getDefault();
 
-    @BeforeAll
-    static void beforeAll() {
+    @BeforeEach
+    void setUp() {
         Task firstTask = new Task("important", "getLunch", Status.IN_PROGRESS);
         Task secondTask = new Task("notImportant", "doHometasks", Status.IN_PROGRESS);
         Epic epic = new Epic("epicTest", "Test", Status.IN_PROGRESS);
@@ -24,6 +27,14 @@ public class TaskManagerTest {
         firstTaskID = firstTask.getID();
         secondTaskID = secondTask.getID();
         epicID = epic.getID();
+    }
+
+    @Test
+    void subtasksShouldBeRemovedWithTheirEpic() {
+        int currentNumberOfSubtasks = taskManager.getAllSubtasks().size();
+        taskManager.removeEpicByID(epicID); // epic имеет 2 subtask'a
+        int numberOfSubtasksAfterRemove = taskManager.getAllSubtasks().size();
+        assertEquals(currentNumberOfSubtasks - 2, numberOfSubtasksAfterRemove);
     }
 
 
@@ -57,18 +68,19 @@ public class TaskManagerTest {
     void subtaskShouldBeRemovedByID() {
         //создаём epic2, т.к subtask'и первого epic'а удаляются тестом allSubtasksShouldBeRemoved
         Epic epic2 = new Epic("epicTest2", "Test2", Status.IN_PROGRESS);
-        Subtask subtask = new Subtask(epic2, "subtaskTest", "Test", Status.IN_PROGRESS);
+        Subtask subtask1 = new Subtask(epic2, "subtaskTest1", "Test1", Status.IN_PROGRESS);
         Subtask subtask2 = new Subtask(epic2, "subtaskTest2", "Test2", Status.NEW);
         Subtask subtask3 = new Subtask(epic2, "subtaskTest3", "Test3", Status.IN_PROGRESS);
         taskManager.createNewEpic(epic2);
         taskManager.createNewSubtask(subtask3);
         taskManager.createNewSubtask(subtask2);
-        taskManager.createNewSubtask(subtask);
+        taskManager.createNewSubtask(subtask1);
+        //проводим сам тест:
         int subtask3ID = subtask3.getID();
-        //сейчас хранятся subtask, subtask2, subtask3
+        int numberOfSubtasksBeforeRemove = taskManager.getAllSubtasks().size();
         taskManager.removeSubtaskByID(subtask3ID);
-        //должный остаться 2 subtask'a - subtask и subtask2
-        assertEquals(2, taskManager.getAllSubtasks().size());
+        int numberOfSubtasksAfterRemove = taskManager.getAllSubtasks().size();
+        assertEquals(numberOfSubtasksBeforeRemove - 1, numberOfSubtasksAfterRemove);
     }
 
     @Test
@@ -77,10 +89,8 @@ public class TaskManagerTest {
         assertEquals(0, taskManager.getAllSubtasks().size());
     }
 
-
-
     @Test
-    void AllEpicsShouldBeRemoved() {
+    void allEpicsShouldBeRemoved() {
         taskManager.removeAllEpics();
         assertEquals(0, taskManager.getAllEpics().size());
     }

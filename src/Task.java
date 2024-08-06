@@ -4,18 +4,18 @@ public class Task {
     protected int taskID;
     protected Status taskStatus;
 
-    public Task (String taskName, String taskDescription, Status taskStatus) {
+    public Task(String taskName, String taskDescription, Status taskStatus) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
     }
 
-    public int getID () {
+    public int getID() {
         return taskID;
     }
 
-    public void setID(int ID) {
-        this.taskID = ID;
+    public void setID(int id) {
+        this.taskID = id;
     }
 
     @Override // перепишем метод эквивалентности объектов для тестировки
