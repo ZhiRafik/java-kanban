@@ -29,7 +29,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         return getTasks();
     }
 
-    public void removeFromLinkedHistory(Node toRemoveNode) {
+    private void removeFromLinkedHistory(Node toRemoveNode) {
         if (toRemoveNode.getPrev() != null && toRemoveNode.getNext() != null) { // если внутри цепи
             Node nextNode = toRemoveNode.getNext(); // следующий от него узел
             Node prevNode = toRemoveNode.getPrev(); // предыдущий узел
@@ -50,7 +50,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private Node head;
 
-    protected void linkLast(Node node) { // добавить узел, как новый ведущий (head)
+    private void linkLast(Node node) { // добавить узел, как новый ведущий (head)
         if (head == null) {
             head = node;
         } else {
@@ -60,7 +60,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    protected ArrayList<Task> getTasks() { // получить все узлы в виде списка с помощью перебора от head
+    private ArrayList<Task> getTasks() { // получить все узлы в виде списка с помощью перебора от head
         ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(head.getTask());
         Node current = head;
