@@ -10,9 +10,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     String filePath;
 
     public FileBackedTaskManager(File file) {
-        fileBackedTaskManagerLoadFromFile();
+        if (file == null || !file.exists()) {
+            throw new
+                    IllegalArgumentException("Файл не существует или является null при создании FileBackedTaskManager");
+        }
         this.file = file;
         filePath = file.getPath();
+        fileBackedTaskManagerLoadFromFile();
     }
 
     @Override
@@ -113,6 +117,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public void fileBackedTaskManagerLoadFromFile() {
         try {
+            if (file == null || !file.exists()) {
+                throw new IllegalArgumentException("Файл не найден или является null при восстановлении задач");
+            }
             FileReader reader = new FileReader(file);
             BufferedReader br = new BufferedReader(reader);
             while (br.ready()) {

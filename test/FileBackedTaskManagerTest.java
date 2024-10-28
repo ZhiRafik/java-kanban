@@ -43,32 +43,11 @@ public class FileBackedTaskManagerTest {
     @Test
     void checkIfTasksAreAddedToFile() {
         String tasksInFile = "";
-        String originalTasksInFile = "4,TASK,important,IN_PROGRESS,getLunch,5,TASK,notImportant,IN_PROGRESS," +
-                "doHometasks,3,EPIC,epicTest,IN_PROGRESS,Test,1,SUBTASK,subtaskTest2,NEW,Test2,3,2,SUBTASK," +
-                "subtaskTest,IN_PROGRESS,Test,3,";
-        try {
-            FileReader reader = new FileReader(tempFile);
-            BufferedReader br = new BufferedReader(reader);
-            while (br.ready()) {
-                {
-                    String line = br.readLine();
-                    tasksInFile = tasksInFile + line;
-                }
-            }
-            br.close();
-        } catch (IOException e) {
-            System.out.println("Ошибка при добавлении в файл: " + e.getMessage());
-        }
-        assertEquals(tasksInFile, originalTasksInFile);
-    }
-
-    @Test
-    void chechIfTasksAreDeletedFromFile() {
-        taskManager.removeTaskByID(firstTaskID);
-        String tasksInFile = "";
-        String originalTasksInFile = "5,TASK,notImportant,IN_PROGRESS," +
-                "doHometasks,3,EPIC,epicTest,IN_PROGRESS,Test,1,SUBTASK,subtaskTest2,NEW,Test2,3,2,SUBTASK," +
-                "subtaskTest,IN_PROGRESS,Test,3,"; //removed 4,TASK,important,IN_PROGRESS,getLunch,
+        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2," +
+                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test," +
+                "3,EPIC,epicTest,IN_PROGRESS,Test," +
+                "4,TASK,important,IN_PROGRESS,getLunch," +
+                "5,TASK,notImportant,IN_PROGRESS,doHometasks,";
         try {
             FileReader reader = new FileReader(tempFile);
             BufferedReader br = new BufferedReader(reader);
@@ -80,6 +59,28 @@ public class FileBackedTaskManagerTest {
         } catch (IOException e) {
             System.out.println("Ошибка при добавлении в файл: " + e.getMessage());
         }
-        assertEquals(tasksInFile, originalTasksInFile);
+        assertEquals(originalTasksInFile, tasksInFile);
+    }
+
+    @Test
+    void chechIfTasksAreDeletedFromFile() {
+        taskManager.removeTaskByID(firstTaskID);
+        String tasksInFile = "";
+        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2," +
+                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test," +
+                "3,EPIC,epicTest,IN_PROGRESS,Test," +
+                "5,TASK,notImportant,IN_PROGRESS,doHometasks,"; //removed 4,TASK,important,IN_PROGRESS,getLunch,
+        try {
+            FileReader reader = new FileReader(tempFile);
+            BufferedReader br = new BufferedReader(reader);
+            while (br.ready()) {
+                String line = br.readLine();
+                tasksInFile = tasksInFile + line;
+            }
+            br.close();
+        } catch (IOException e) {
+            System.out.println("Ошибка при добавлении в файл: " + e.getMessage());
+        }
+        assertEquals(originalTasksInFile, tasksInFile);
     }
 }
