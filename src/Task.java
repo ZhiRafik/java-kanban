@@ -12,19 +12,29 @@ public class Task {
         this.type = Type.TASK;
     }
 
-    public String getDescription() { return taskDescription; }
+    public String getDescription() {
+        return taskDescription;
+    }
 
-    public Status getStatus() { return taskStatus; };
+    public Status getStatus() {
+        return taskStatus;
+    }
 
-    public Type getType() { return type; }
+    public Type getType() {
+        return type;
+    }
 
     public int getID() {
         return taskID;
     }
 
-    public void setID(int id) { this.taskID = id; }
+    public void setID(int id) {
+        this.taskID = id;
+    }
 
-    public String getName() { return taskName; }
+    public String getName() {
+        return taskName;
+    }
 
     @Override // перепишем метод эквивалентности объектов для тестировки
     public boolean equals(Object o) {
