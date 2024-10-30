@@ -91,14 +91,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    public void save() {
+    public void save(){
         try (FileWriter cleaningFileWriter = new FileWriter(filePath, false)) {
             cleaningFileWriter.write("id,type,name,status,description,epic"); //перезаписываем файл
         } catch (IOException e) {
-            System.out.println("Произошла ошибка при очистке файла: " + e.getMessage());
+            throw new IllegalArgumentException("ManagerSaveException: " + e.getMessage());
         }
         if (file == null || !file.exists()) {
-            throw new IllegalArgumentException("Файл не найден или является null при восстановлении задач");
+            throw new IllegalArgumentException("ManagerSaveException: file is null or does not exist");
         }
         ArrayList<Task> tasksToSave = getAllTasks();
         ArrayList<Epic> epicsToSave = getAllEpics();
