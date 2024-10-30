@@ -124,24 +124,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             BufferedReader br = new BufferedReader(reader);
             while (br.ready()) {
                 String line = br.readLine(); // отделили задачу
-                String[] split = line.split(","); //разобрали на поля
-                if (split[1].equals("TASK")) {
-                    Status status = Status.valueOf(split[3]);
-                    Task task = new Task(split[2], split[4], status);
-                    tasks.put(Integer.parseInt(split[0]), task);
-                } else if (split[1].equals("EPIC")) {
-                    Status status = Status.valueOf(split[3]);
-                    Epic epic = new Epic(split[2], split[4], status);
-                    epics.put(Integer.parseInt(split[0]), epic);
-                } else if (split[1].equals("SUBTASK")) {
-                    Status status = Status.valueOf(split[3]);
-                    Subtask subtask = new Subtask(epics.get(split[5]), split[2], split[4], status);
-                    subtasks.put(Integer.parseInt(split[0]), subtask);
-                }
+                fromString(line);
             }
             br.close();
         } catch (IOException e) {
             System.out.println("Ошибка восстановления задач: " + e.getMessage());
+        }
+    }
+
+    public void fromString(String line) {
+        String[] split = line.split(","); //разобрали на поля
+        if (split[1].equals("TASK")) {
+            Status status = Status.valueOf(split[3]);
+            Task task = new Task(split[2], split[4], status);
+            tasks.put(Integer.parseInt(split[0]), task);
+        } else if (split[1].equals("EPIC")) {
+            Status status = Status.valueOf(split[3]);
+            Epic epic = new Epic(split[2], split[4], status);
+            epics.put(Integer.parseInt(split[0]), epic);
+        } else if (split[1].equals("SUBTASK")) {
+            Status status = Status.valueOf(split[3]);
+            Subtask subtask = new Subtask(epics.get(split[5]), split[2], split[4], status);
+            subtasks.put(Integer.parseInt(split[0]), subtask);
         }
     }
 
