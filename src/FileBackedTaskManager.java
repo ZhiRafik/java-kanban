@@ -97,6 +97,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } catch (IOException e) {
             System.out.println("Произошла ошибка при очистке файла: " + e.getMessage());
         }
+        if (file == null || !file.exists()) {
+            throw new IllegalArgumentException("Файл не найден или является null при восстановлении задач");
+        }
         ArrayList<Task> tasksToSave = getAllTasks();
         ArrayList<Epic> epicsToSave = getAllEpics();
         ArrayList<Subtask> subtasksToSave = getAllSubtasks();
@@ -111,7 +114,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 fileWriter.write(toString(i) + System.lineSeparator());
             }
         } catch (IOException e) {
-            System.out.println("Произошла ошибка при записи в файл: " + e.getMessage());
+            throw new IllegalArgumentException("ManagerSaveException: " + e.getMessage());
         }
     }
 
@@ -127,8 +130,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 fromString(line);
             }
             br.close();
-        } catch (IOException e) {
-            System.out.println("Ошибка восстановления задач: " + e.getMessage());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("IllegalArgumentException: " + e.getMessage());
         }
     }
 
