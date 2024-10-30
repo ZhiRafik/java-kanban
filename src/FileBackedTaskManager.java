@@ -91,7 +91,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    public void save() А{
+    public void save() {
         try (FileWriter cleaningFileWriter = new FileWriter(filePath, false)) {
             cleaningFileWriter.write("id,type,name,status,description,epic"); //перезаписываем файл
         } catch (IOException e) {
