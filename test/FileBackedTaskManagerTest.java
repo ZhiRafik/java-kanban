@@ -43,8 +43,8 @@ public class FileBackedTaskManagerTest {
     @Test
     void checkIfTasksAreAddedToFile() {
         String tasksInFile = "";
-        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2," +
-                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test," +
+        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
+                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3," +
                 "3,EPIC,epicTest,IN_PROGRESS,Test," +
                 "4,TASK,important,IN_PROGRESS,getLunch," +
                 "5,TASK,notImportant,IN_PROGRESS,doHometasks,";
@@ -66,8 +66,8 @@ public class FileBackedTaskManagerTest {
     void chechIfTasksAreDeletedFromFile() {
         taskManager.removeTaskByID(firstTaskID);
         String tasksInFile = "";
-        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2," +
-                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test," +
+        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
+                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3," +
                 "3,EPIC,epicTest,IN_PROGRESS,Test," +
                 "5,TASK,notImportant,IN_PROGRESS,doHometasks,"; //removed 4,TASK,important,IN_PROGRESS,getLunch,
         try {

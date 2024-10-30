@@ -111,7 +111,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 fileWriter.write(toString(i) + System.lineSeparator());
             }
             for (Subtask i : subtasksToSave) {
-                fileWriter.write(toString(i) + "," + i.getEpic().getID() +  "," + System.lineSeparator());
+                fileWriter.write(toString(i) + System.lineSeparator());
             }
         } catch (IOException e) {
             throw new IllegalArgumentException("ManagerSaveException: " + e.getMessage());
@@ -153,11 +153,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     String toString(Task task) {
-        String taskString = (task.getID() + ",") + (task.getType() + ",") + (task.getName() + ",") +
-                (task.getStatus() + ",") + (task.getDescription() + ",");
-        //if (task.getType() == Type.SUBTASK) {
-            //taskString = taskString + task.getEpic().getID() + ","; - не получиться получить ID Epic'a, т.к. Task task
-        //}
-        return taskString;
+        return task.toString();
     }
 }

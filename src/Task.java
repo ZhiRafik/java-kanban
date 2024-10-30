@@ -36,6 +36,11 @@ public class Task {
         return taskName;
     }
 
+    @Override
+    public String toString() {
+        return taskID + "," + type + "," + taskName + "," + taskStatus + "," + taskDescription + ",";
+    }
+
     @Override // перепишем метод эквивалентности объектов для тестировки
     public boolean equals(Object o) {
         if (this == o) return true;
