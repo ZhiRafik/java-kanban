@@ -16,9 +16,46 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
         this.file = file;
         filePath = file.getPath();
-        fileBackedTaskManagerLoadFromFile();
     }
 
+    static FileBackedTaskManager loadFromFile(File file) {
+        try {
+            if (file == null || !file.exists()) {
+                throw new IllegalArgumentException("Файл не найден или является null при восстановлении задач");
+            }
+            FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
+            FileReader reader = new FileReader(file);
+            BufferedReader br = new BufferedReader(reader);
+            while (br.ready()) {
+                String line = br.readLine(); // отделили задачу
+                String[] split = line.split(",");
+                if (split[1].equals(Type.TASK.toString())) {
+                    fileBackedTaskManager.tasks.put(Integer.parseInt(split[0]), fromString(line));
+                }
+            }
+            while (br.ready()) {
+                String line = br.readLine(); // отделили задачу
+                String[] split = line.split(",");
+                if (split[1].equals(Type.EPIC.toString())) {
+                    fileBackedTaskManager.epics.put(Integer.parseInt(split[0]), (Epic) fromString(line));
+                }
+            }
+            while (br.ready()) {
+                String line = br.readLine(); // отделили задачу
+                String[] split = line.split(",");
+                if (split[1].equals(Type.SUBTASK.toString())) {
+                    Subtask subtask = (Subtask) fromString(line);
+                    subtask.setEpic(fileBackedTaskManager.epics.get(Integer.parseInt(split[5])));
+                    System.out.println((Integer.parseInt(split[5])));
+                    fileBackedTaskManager.subtasks.put(Integer.parseInt(split[0]), subtask);
+                }
+            }
+            br.close();
+            return fileBackedTaskManager;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
     @Override
     public void removeAllTasks() {
         super.removeAllTasks();
@@ -91,7 +128,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    public void save() {
+    private void save() {
         try (FileWriter cleaningFileWriter = new FileWriter(filePath, false)) {
             cleaningFileWriter.write("id,type,name,status,description,epic"); //перезаписываем файл
         } catch (IOException e) {
@@ -118,41 +155,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public void fileBackedTaskManagerLoadFromFile() {
-        try {
-            if (file == null || !file.exists()) {
-                throw new IllegalArgumentException("Файл не найден или является null при восстановлении задач");
-            }
-            FileReader reader = new FileReader(file);
-            BufferedReader br = new BufferedReader(reader);
-            while (br.ready()) {
-                String line = br.readLine(); // отделили задачу
-                fromString(line);
-            }
-            br.close();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("IllegalArgumentException: " + e.getMessage());
-        }
-    }
-
-    public void fromString(String line) {
+    private static Task fromString(String line) {
         String[] split = line.split(","); //разобрали на поля
         if (split[1].equals("TASK")) {
             Status status = Status.valueOf(split[3]);
-            Task task = new Task(split[2], split[4], status);
-            tasks.put(Integer.parseInt(split[0]), task);
+            return new Task(split[2], split[4], status);
         } else if (split[1].equals("EPIC")) {
             Status status = Status.valueOf(split[3]);
-            Epic epic = new Epic(split[2], split[4], status);
-            epics.put(Integer.parseInt(split[0]), epic);
+            return new Epic(split[2], split[4], status);
         } else if (split[1].equals("SUBTASK")) {
             Status status = Status.valueOf(split[3]);
-            Subtask subtask = new Subtask(epics.get(split[5]), split[2], split[4], status);
-            subtasks.put(Integer.parseInt(split[0]), subtask);
+            return new Subtask(null, split[2], split[4], status); // невозможно восстановить привязку к Epic
+                                            // из-за статичности метода, нужно использовать нестатичную переменную
         }
+        return null;
     }
 
-    String toString(Task task) {
+    private String toString(Task task) {
         return task.toString();
     }
 }

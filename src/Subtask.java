@@ -11,6 +11,10 @@ public class Subtask extends Task {
         return epic;
     }
 
+    public void setEpic(Epic epic) {
+        this.epic = epic;
+    }
+
     @Override
     public String toString() {
         return taskID + "," + type + "," + taskName + "," + taskStatus + "," + taskDescription + ","

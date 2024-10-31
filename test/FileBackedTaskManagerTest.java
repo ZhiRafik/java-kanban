@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.nio.file.Path;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBackedTaskManagerTest {
@@ -39,6 +42,31 @@ public class FileBackedTaskManagerTest {
         secondTaskID = secondTask.getID();
         epicID = epic.getID();
     }
+
+    @Test
+    void checkIfTasksAreSavedCorrectly() {
+        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
+                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3," +
+                "3,EPIC,epicTest,IN_PROGRESS,Test," +
+                "4,TASK,important,IN_PROGRESS,getLunch," +
+                "5,TASK,notImportant,IN_PROGRESS,doHometasks,";
+        FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(tempFile);
+        String savedTasks = "";
+        ArrayList<Task> tasks = manager2.getAllTasks();
+        ArrayList<Subtask> subtasks = manager2.getAllSubtasks();
+        ArrayList<Epic> epics = manager2.getAllEpics();
+        for (Subtask i : subtasks) {
+            savedTasks = savedTasks + i.toString();
+        }
+        for (Epic i : epics) {
+            savedTasks = savedTasks + i.toString();
+        }
+        for (Task i : tasks) {
+            savedTasks = savedTasks + i.toString();
+        }
+        assertEquals(originalTasksInFile, savedTasks);
+    }
+
 
     @Test
     void checkIfTasksAreAddedToFile() {
