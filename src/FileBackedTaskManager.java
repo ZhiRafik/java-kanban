@@ -26,27 +26,35 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
             FileReader reader = new FileReader(file);
             BufferedReader br = new BufferedReader(reader);
+            ArrayList<String> epics = new ArrayList<>();
+            ArrayList<String> subtasks = new ArrayList<>();
             while (br.ready()) {
                 String line = br.readLine(); // отделили задачу
                 String[] split = line.split(",");
                 if (split[1].equals(Type.TASK.toString())) {
-                    fileBackedTaskManager.tasks.put(Integer.parseInt(split[0]), fromString(line));
+                    Task task = fromString(line);
+                    task.setID(Integer.parseInt(split[0]));
+                    fileBackedTaskManager.tasks.put(Integer.parseInt(split[0]), task);
+                } else if (split[1].equals(Type.EPIC.toString())) {
+                    epics.add(line);
+                } else if (split[1].equals(Type.SUBTASK.toString())) {
+                    subtasks.add(line);
                 }
             }
-            while (br.ready()) {
-                String line = br.readLine(); // отделили задачу
+            for (String line : epics) {
                 String[] split = line.split(",");
                 if (split[1].equals(Type.EPIC.toString())) {
-                    fileBackedTaskManager.epics.put(Integer.parseInt(split[0]), (Epic) fromString(line));
+                    Epic epic = (Epic) fromString(line);
+                    epic.setID(Integer.parseInt(split[0]));
+                    fileBackedTaskManager.epics.put(Integer.parseInt(split[0]), epic);
                 }
             }
-            while (br.ready()) {
-                String line = br.readLine(); // отделили задачу
+            for (String line : subtasks) {
                 String[] split = line.split(",");
                 if (split[1].equals(Type.SUBTASK.toString())) {
                     Subtask subtask = (Subtask) fromString(line);
+                    subtask.setID(Integer.parseInt(split[0]));
                     subtask.setEpic(fileBackedTaskManager.epics.get(Integer.parseInt(split[5])));
-                    System.out.println((Integer.parseInt(split[5])));
                     fileBackedTaskManager.subtasks.put(Integer.parseInt(split[0]), subtask);
                 }
             }

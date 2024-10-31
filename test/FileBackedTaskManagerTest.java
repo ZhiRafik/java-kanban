@@ -91,7 +91,7 @@ public class FileBackedTaskManagerTest {
     }
 
     @Test
-    void chechIfTasksAreDeletedFromFile() {
+    void checkIfTasksAreDeletedFromFile() {
         taskManager.removeTaskByID(firstTaskID);
         String tasksInFile = "";
         String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
