@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBackedTaskManagerTest {
+    private static int firstSubtaskID;
+    private static int secondSubtaskID;
     private static int firstTaskID;
     private static int secondTaskID;
     private static int epicID;
@@ -33,18 +35,20 @@ public class FileBackedTaskManagerTest {
         Epic epic = new Epic("epicTest", "Test", Status.IN_PROGRESS);
         Subtask subtask = new Subtask(epic, "subtaskTest", "Test", Status.IN_PROGRESS);
         Subtask subtask2 = new Subtask(epic, "subtaskTest2", "Test2", Status.NEW);
-        taskManager.createNewTask(subtask2);
-        taskManager.createNewTask(subtask);
-        taskManager.createNewTask(epic);
+        taskManager.createNewSubtask(subtask2);
+        taskManager.createNewSubtask(subtask);
+        taskManager.createNewEpic(epic);
         taskManager.createNewTask(firstTask);
         taskManager.createNewTask(secondTask);
         firstTaskID = firstTask.getID();
         secondTaskID = secondTask.getID();
+        firstSubtaskID = subtask.getID();
+        secondSubtaskID = subtask2.getID();
         epicID = epic.getID();
     }
 
     @Test
-    void checkIfTasksAreSavedCorrectly() {
+    void checkIfTasksAreLoadedFromFileCorrectly() {
         String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
                 "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3," +
                 "3,EPIC,epicTest,IN_PROGRESS,Test," +
@@ -67,48 +71,38 @@ public class FileBackedTaskManagerTest {
         assertEquals(originalTasksInFile, savedTasks);
     }
 
-
     @Test
-    void checkIfTasksAreAddedToFile() {
-        String tasksInFile = "";
-        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
-                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3," +
-                "3,EPIC,epicTest,IN_PROGRESS,Test," +
-                "4,TASK,important,IN_PROGRESS,getLunch," +
-                "5,TASK,notImportant,IN_PROGRESS,doHometasks,";
-        try {
-            FileReader reader = new FileReader(tempFile);
-            BufferedReader br = new BufferedReader(reader);
-            while (br.ready()) {
-                String line = br.readLine();
-                tasksInFile = tasksInFile + line;
-            }
-            br.close();
-        } catch (IOException e) {
-            System.out.println("Ошибка при добавлении в файл: " + e.getMessage());
-        }
-        assertEquals(originalTasksInFile, tasksInFile);
+    void checkIfSubtasksAreConnectedToEpicsCorrectly() {
+        FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(taskManager.getEpic(epicID).getSubtasks(), manager2.getEpic(epicID).getSubtasks());
     }
 
     @Test
-    void checkIfTasksAreDeletedFromFile() {
+    void checkIfEpicsAreConnectedToSubtasksCorrectly() {
+        FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(taskManager.getSubtask(firstSubtaskID).getEpic(), manager2.getSubtask(firstSubtaskID).getEpic());
+    }
+    @Test
+    void checkIfTasksAreLoadedFromFileCorrectlyAfterDeletionATask() {
         taskManager.removeTaskByID(firstTaskID);
-        String tasksInFile = "";
         String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
                 "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3," +
                 "3,EPIC,epicTest,IN_PROGRESS,Test," +
-                "5,TASK,notImportant,IN_PROGRESS,doHometasks,"; //removed 4,TASK,important,IN_PROGRESS,getLunch,
-        try {
-            FileReader reader = new FileReader(tempFile);
-            BufferedReader br = new BufferedReader(reader);
-            while (br.ready()) {
-                String line = br.readLine();
-                tasksInFile = tasksInFile + line;
-            }
-            br.close();
-        } catch (IOException e) {
-            System.out.println("Ошибка при добавлении в файл: " + e.getMessage());
+                "5,TASK,notImportant,IN_PROGRESS,doHometasks,";
+        FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(tempFile);
+        String savedTasks = "";
+        ArrayList<Task> tasks = manager2.getAllTasks();
+        ArrayList<Subtask> subtasks = manager2.getAllSubtasks();
+        ArrayList<Epic> epics = manager2.getAllEpics();
+        for (Subtask i : subtasks) {
+            savedTasks = savedTasks + i.toString();
         }
-        assertEquals(originalTasksInFile, tasksInFile);
+        for (Epic i : epics) {
+            savedTasks = savedTasks + i.toString();
+        }
+        for (Task i : tasks) {
+            savedTasks = savedTasks + i.toString();
+        }
+        assertEquals(originalTasksInFile, savedTasks);
     }
 }

@@ -18,7 +18,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         filePath = file.getPath();
     }
 
-    static FileBackedTaskManager loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File file) {
         try {
             if (file == null || !file.exists()) {
                 throw new IllegalArgumentException("Файл не найден или является null при восстановлении задач");
@@ -57,6 +57,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     subtask.setEpic(fileBackedTaskManager.epics.get(Integer.parseInt(split[5])));
                     fileBackedTaskManager.subtasks.put(Integer.parseInt(split[0]), subtask);
                 }
+            }
+            for (Subtask subtask : fileBackedTaskManager.getAllSubtasks()) {
+                subtask.getEpic().addSubtask(subtask);
             }
             br.close();
             return fileBackedTaskManager;
@@ -108,14 +111,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateEpic(Epic task) {
-        super.updateEpic(task);
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
         save();
     }
 
     @Override
-    public void updateSubtask(Subtask task) {
-        super.updateSubtask(task);
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
         save();
     }
 
@@ -174,8 +177,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             return new Epic(split[2], split[4], status);
         } else if (split[1].equals("SUBTASK")) {
             Status status = Status.valueOf(split[3]);
-            return new Subtask(null, split[2], split[4], status); // невозможно восстановить привязку к Epic
-                                            // из-за статичности метода, нужно использовать нестатичную переменную
+            return new Subtask(null, split[2], split[4], status);
         }
         return null;
     }

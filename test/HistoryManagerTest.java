@@ -27,7 +27,6 @@ public class HistoryManagerTest {
 
     @Test
     void add() {
-        System.out.println(firstTask);
         historyManager.add(firstTask);
         final ArrayList<Task> history = historyManager.getHistory();
         assertNotNull(history, "История не пустая.");
