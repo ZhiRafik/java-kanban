@@ -1,13 +1,10 @@
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.nio.file.Path;
-import java.sql.SQLOutput;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,9 +29,12 @@ public class FileBackedTaskManagerTest {
 
         Task firstTask = new Task("important", "getLunch", Status.IN_PROGRESS);
         Task secondTask = new Task("notImportant", "doHometasks", Status.IN_PROGRESS);
+        secondTask.setDuration(Duration.ofMinutes(20));
         Epic epic = new Epic("epicTest", "Test", Status.IN_PROGRESS);
         Subtask subtask = new Subtask(epic, "subtaskTest", "Test", Status.IN_PROGRESS);
+        subtask.setDuration(Duration.ofMinutes(15));
         Subtask subtask2 = new Subtask(epic, "subtaskTest2", "Test2", Status.NEW);
+        subtask2.setStartTime(LocalDateTime.of(2024, 11, 24, 1, 46));
         taskManager.createNewSubtask(subtask2);
         taskManager.createNewSubtask(subtask);
         taskManager.createNewEpic(epic);
@@ -49,11 +49,11 @@ public class FileBackedTaskManagerTest {
 
     @Test
     void checkIfTasksAreLoadedFromFileCorrectly() {
-        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
-                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3," +
-                "3,EPIC,epicTest,IN_PROGRESS,Test," +
-                "4,TASK,important,IN_PROGRESS,getLunch," +
-                "5,TASK,notImportant,IN_PROGRESS,doHometasks,";
+        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3,PT0S,2024-11-24T01:46," +
+                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3,PT15M,null," +
+                "3,EPIC,epicTest,IN_PROGRESS,Test,PT0S,2024-11-24T01:46," +
+                "4,TASK,important,IN_PROGRESS,getLunch,PT0S,null," +
+                "5,TASK,notImportant,IN_PROGRESS,doHometasks,PT20M,null,";
         FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(tempFile);
         String savedTasks = "";
         ArrayList<Task> tasks = manager2.getAllTasks();
@@ -85,24 +85,35 @@ public class FileBackedTaskManagerTest {
     @Test
     void checkIfTasksAreLoadedFromFileCorrectlyAfterDeletionATask() {
         taskManager.removeTaskByID(firstTaskID);
-        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3," +
-                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3," +
-                "3,EPIC,epicTest,IN_PROGRESS,Test," +
-                "5,TASK,notImportant,IN_PROGRESS,doHometasks,";
+        String originalTasksInFile = "1,SUBTASK,subtaskTest2,NEW,Test2,3,PT0S,2024-11-24T01:46," +
+                "2,SUBTASK,subtaskTest,IN_PROGRESS,Test,3,PT15M,null," +
+                "3,EPIC,epicTest,IN_PROGRESS,Test,PT0S,2024-11-24T01:46," +
+                "5,TASK,notImportant,IN_PROGRESS,doHometasks,PT20M,null,";
         FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(tempFile);
         String savedTasks = "";
         ArrayList<Task> tasks = manager2.getAllTasks();
         ArrayList<Subtask> subtasks = manager2.getAllSubtasks();
         ArrayList<Epic> epics = manager2.getAllEpics();
-        for (Subtask i : subtasks) {
-            savedTasks = savedTasks + i.toString();
-        }
-        for (Epic i : epics) {
-            savedTasks = savedTasks + i.toString();
-        }
-        for (Task i : tasks) {
-            savedTasks = savedTasks + i.toString();
-        }
+
+        savedTasks = subtasks.stream()
+                .map(Subtask::toString)
+                .reduce("", (acc, str) -> acc + str);
+        savedTasks = epics.stream()
+                .map(Epic::toString)
+                .reduce(savedTasks, (acc, str) -> acc + str);
+        savedTasks = tasks.stream()
+                .map(Task::toString)
+                .reduce(savedTasks, (acc, str) -> acc + str);
         assertEquals(originalTasksInFile, savedTasks);
+    }
+
+    @Test
+    void shouldNotAllowCreateTasksWithOverlap() {
+        Task overlappingTask = new Task("overlapping", "toOverlap", Status.IN_PROGRESS);
+        overlappingTask.setStartTime((LocalDateTime.of(2024, 11, 24, 1, 44)));
+        //установлено время задачи за 2 минуты до subtask2
+        overlappingTask.setDuration(Duration.ofMinutes(10)); // 8-минутное пересечение
+        assertFalse(taskManager.prioritizedTasks.contains(overlappingTask));
+        assertFalse(taskManager.tasks.containsValue(overlappingTask));
     }
 }
