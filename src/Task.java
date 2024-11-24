@@ -1,15 +1,44 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 public class Task {
     protected String taskName;
     protected String taskDescription;
     protected int taskID;
     protected Status taskStatus;
     protected Type type;
+    protected Duration duration = Duration.ZERO;
+    protected LocalDateTime startTime;
+
 
     public Task(String taskName, String taskDescription, Status taskStatus) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
         this.type = Type.TASK;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return Optional.ofNullable(startTime)
+                .map(time -> time.plus(duration))
+                .orElse(null);
     }
 
     public String getDescription() {
@@ -38,7 +67,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return taskID + "," + type + "," + taskName + "," + taskStatus + "," + taskDescription + ",";
+        return taskID + "," + type + "," + taskName + "," + taskStatus + "," + taskDescription + ","
+                + duration + "," + startTime + ",";
     }
 
     @Override // перепишем метод эквивалентности объектов для тестировки
