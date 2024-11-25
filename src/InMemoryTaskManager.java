@@ -83,22 +83,18 @@ public class InMemoryTaskManager implements TaskManager {
             overlap = true;
         }
         if (!overlap) {
-            newID = createNewID(newID);
+            newID = createNewID();
             task.setID(newID);
             tasks.put(newID, task);
             if (task.getStartTime() != null) {
                 prioritizedTasks.add(task);
             }
-        } else {
-            System.out.println("TasksOverlap: " +  prioritizedTasks.lower(task).getEndTime()
-                    + " -> " + task.getStartTime() + " " + task.getEndTime()
-                    + " <- " + prioritizedTasks.higher(task).getStartTime());
         }
     }
 
     @Override
     public void createNewEpic(Epic epic) {
-        newID = createNewID(newID);
+        newID = createNewID();
         epic.setID(newID);
         epics.put(newID, epic);
     }
@@ -112,17 +108,13 @@ public class InMemoryTaskManager implements TaskManager {
             overlap = true;
         }
         if (!overlap) {
-            newID = createNewID(newID);
+            newID = createNewID();
             subtask.setID(newID);
             subtasks.put(newID, subtask);
             subtask.getEpic().addSubtask(subtask); // добавляем в принадлежный эпик
             if (subtask.getStartTime() != null) {
                 prioritizedTasks.add(subtask);
             }
-        } else {
-            System.out.println("TasksOverlap: " +  prioritizedTasks.lower(subtask).getEndTime()
-                    + " -> " + subtask.getStartTime() + " " + subtask.getEndTime()
-                    + " <- " + prioritizedTasks.higher(subtask).getStartTime());
         }
     }
 
@@ -139,10 +131,6 @@ public class InMemoryTaskManager implements TaskManager {
                 prioritizedTasks.add(task);
             }
             tasks.put(task.getID(), task);
-        } else {
-            System.out.println("TasksOverlap: " +  prioritizedTasks.lower(task).getEndTime()
-                    + " -> " + task.getStartTime() + " " + task.getEndTime()
-                    + " <- " + prioritizedTasks.higher(task).getStartTime());
         }
     }
 
@@ -165,10 +153,6 @@ public class InMemoryTaskManager implements TaskManager {
             }
             subtasks.put(subtask.getID(), subtask);
             subtask.getEpic().checkStatus();
-        } else {
-            System.out.println("TasksOverlap: " +  prioritizedTasks.lower(subtask).getEndTime()
-                    + " -> " + subtask.getStartTime() + " " + subtask.getEndTime()
-                    + " <- " + prioritizedTasks.higher(subtask).getStartTime());
         }
     }
 
@@ -215,7 +199,7 @@ public class InMemoryTaskManager implements TaskManager {
         return inMemoryHistoryManager.getHistory();
     }
 
-    public boolean checkTasksOverlap(Task t1, Task t2) {
+    private boolean checkTasksOverlap(Task t1, Task t2) {
         if (t1 == null || t2 == null || t1.getEndTime() == null || t2.getEndTime() == null) {
             return false; // если у одного из объектов не указано время, пересечения быть не может
         }
@@ -231,7 +215,7 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasks;
     }
 
-    private int createNewID(int lastID) {
+    private int createNewID() {
         newID++;
         return newID;
     }
