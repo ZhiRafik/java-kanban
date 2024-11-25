@@ -34,23 +34,6 @@ public class Epic extends Task {
         }
     }
 
-    public void updateSubtask(Subtask updatedSubtask) {
-        for (int i = 0; i < subtasks.size(); i++) {
-            if (subtasks.get(i).taskID == updatedSubtask.taskID) {
-                duration.minus(subtasks.get(i).getDuration()); // в обновлённой подзадаче может быть изменено время
-                endTime.minus(subtasks.get(i).getDuration());
-                subtasks.set(i, updatedSubtask);
-                duration.plus(subtasks.get(i).getDuration());
-                endTime.plus(subtasks.get(i).getDuration());
-                if (subtasks.get(i).getStartTime().isBefore(startTime)) { // обновляем время начало epic'a,
-                    startTime = subtasks.get(i).getStartTime(); // если новая подзадача начинается раньше
-                }
-            }
-        }
-        endTime = startTime.plus(duration); // также обновляем время окончания
-        checkStatus();
-    }
-
     public void checkStatus() {
         //проверяем изменение статутса всего эпика
         boolean newStatus = subtasks.stream()

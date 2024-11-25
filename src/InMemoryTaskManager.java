@@ -126,7 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
             overlap = true;
         }
         if (!overlap) {
-            prioritizedTasks.remove(tasks.get(task.getID())); // может измениться время, соответственно и приоритет
+            prioritizedTasks.remove(tasks.get(task.getID()));
             if (task.getStartTime() != null) {
                 prioritizedTasks.add(task);
             }
@@ -146,8 +146,8 @@ public class InMemoryTaskManager implements TaskManager {
                 || checkTasksOverlap(prioritizedTasks.lower(subtask), subtask))) {
             overlap = true;
         }
-        if (!overlap) {
-            prioritizedTasks.remove(subtasks.get(subtask.getID())); // может измениться время, соответственно и приоритет
+        if (!overlap) { // у нового и старого subtask'ов одинаковый ID
+            prioritizedTasks.remove(subtasks.get(subtask.getID()));
             if (subtask.getStartTime() != null) {
                 prioritizedTasks.add(subtask);
             }
