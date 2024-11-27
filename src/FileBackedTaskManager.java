@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.BufferedReader;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     protected File file;
@@ -34,6 +36,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 if (split[1].equals(Type.TASK.toString())) {
                     Task task = fromString(line);
                     task.setID(Integer.parseInt(split[0]));
+                    if (!split[5].equals("null")) {
+                        task.setDuration(Duration.parse(split[5]));
+                    }
+                    if (!split[6].equals("null")) {
+                        task.setStartTime(LocalDateTime.parse(split[6]));
+                    }
                     fileBackedTaskManager.tasks.put(Integer.parseInt(split[0]), task);
                 } else if (split[1].equals(Type.EPIC.toString())) {
                     epics.add(line);
@@ -47,7 +55,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Epic epic = (Epic) fromString(line);
                     epic.setID(Integer.parseInt(split[0]));
                     fileBackedTaskManager.epics.put(Integer.parseInt(split[0]), epic);
-                }
+                } // в эпике не нужно обрабатывать время, т.к. оно будет добавлено с добавлением subtask'ов
             }
             for (String line : subtasks) {
                 String[] split = line.split(",");
@@ -55,6 +63,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Subtask subtask = (Subtask) fromString(line);
                     subtask.setID(Integer.parseInt(split[0]));
                     subtask.setEpic(fileBackedTaskManager.epics.get(Integer.parseInt(split[5])));
+                    if (!split[6].equals("null")) {
+                        subtask.setDuration(Duration.parse(split[6]));
+                    }
+                    if (!split[7].equals("null")) {
+                        subtask.setStartTime(LocalDateTime.parse(split[7]));
+                    }
                     fileBackedTaskManager.subtasks.put(Integer.parseInt(split[0]), subtask);
                 }
             }
@@ -142,7 +156,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (FileWriter cleaningFileWriter = new FileWriter(filePath, false)) {
-            cleaningFileWriter.write("id,type,name,status,description,epic"); //перезаписываем файл
+            cleaningFileWriter.write("id,type,name,status,description,epic,duration,startTime"); //перезаписываем файл
         } catch (IOException e) {
             throw new IllegalArgumentException("ManagerSaveException: " + e.getMessage());
         }
