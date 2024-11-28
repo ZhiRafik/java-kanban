@@ -62,6 +62,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private ArrayList<Task> getTasks() { // получить все узлы в виде списка с помощью перебора от head
         ArrayList<Task> tasks = new ArrayList<>();
+        if (head == null) {
+            return tasks;
+        }
         tasks.add(head.getTask());
         Node current = head;
         while (current.getPrev() != null) {
