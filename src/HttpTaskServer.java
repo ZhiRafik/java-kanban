@@ -345,7 +345,7 @@ public class HttpTaskServer {
                     sendResponse(exchange, gson.toJson(task), 200);
                 }
             } catch (NumberFormatException e) {
-                sendResponse(exchange, gson.toJson("Некорретный ID"), 400);
+                sendResponse(exchange, gson.toJson("Некорректный ID"), 400);
             }
         }
     }
@@ -356,6 +356,14 @@ public class HttpTaskServer {
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response.getBytes());
         }
+    }
+
+    public void start() {
+        server.start();
+    }
+
+    public void stop() {
+        server.stop(0);
     }
 
     public static void main(String[] args) {
