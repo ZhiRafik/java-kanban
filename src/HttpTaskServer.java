@@ -3,12 +3,18 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.TreeSet;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 public class HttpTaskServer {
     private final HttpServer server;
@@ -17,9 +23,13 @@ public class HttpTaskServer {
     private final Gson gson;
 
     public HttpTaskServer() throws IOException {
-        this.taskManager = new InMemoryTaskManager();
-        this.historyManager = new InMemoryHistoryManager();
-        this.gson = new GsonBuilder().setPrettyPrinting().create();
+        this.taskManager = (InMemoryTaskManager) Managers.getDefault();
+        this.historyManager = (InMemoryHistoryManager) Managers.getDefaultHistory();
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .setPrettyPrinting()
+                .create();
         server = HttpServer.create(new InetSocketAddress(8080), 0);
         server.createContext("/tasks", new TasksHandler(taskManager, gson));
         server.createContext("/subtasks", new SubtasksHandler(taskManager, gson));
@@ -68,6 +78,10 @@ public class HttpTaskServer {
             if (method.equals("GET")) {
                 try {
                     ArrayList<Task> tasks = historyManager.getHistory();
+                    if (tasks == null || tasks.isEmpty()) {
+                        sendResponse(exchange, "[]", 200); // Отправляем пустой массив
+                        return;
+                    }
                     sendResponse(exchange, gson.toJson(tasks), 200);
                 } catch (Exception e) {
                     sendResponse(exchange, gson.toJson("Внутренняя ошибка сервера"), 500);
@@ -255,7 +269,7 @@ public class HttpTaskServer {
                 }
                 sendResponse(exchange, gson.toJson(subtask), 200);
             } catch (NumberFormatException e) {
-                sendResponse(exchange, gson.toJson("Некорретный ID"), 400);
+                sendResponse(exchange, gson.toJson("Некорректный ID"), 400);
             }
         }
 
@@ -313,7 +327,7 @@ public class HttpTaskServer {
                 taskManager.removeTaskByID(taskId);
                 sendResponse(exchange, gson.toJson("Задача успешно удалена"), 200);
             } catch (NumberFormatException e) {
-                sendResponse(exchange, gson.toJson("Некорретный ID"), 400);
+                sendResponse(exchange, gson.toJson("Некорректный ID"), 400);
             }
         }
 
@@ -366,7 +380,44 @@ public class HttpTaskServer {
         server.stop(0);
     }
 
+    static class DurationAdapter extends TypeAdapter<Duration> {
+        @Override
+        public void write(JsonWriter out, Duration value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(value.toString());
+            }
+        }
+
+        @Override
+        public Duration read(JsonReader in) throws IOException {
+            String durationString = in.nextString();
+            return Duration.parse(durationString);
+        }
+    }
+
+    static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
+        private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        @Override
+        public void write(JsonWriter out, LocalDateTime value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(value.format(FORMATTER));
+            }
+        }
+
+        @Override
+        public LocalDateTime read(JsonReader in) throws IOException {
+            String value = in.nextString();
+            return LocalDateTime.parse(value, FORMATTER);
+        }
+    }
+
     public static void main(String[] args) {
 
     }
 }
+

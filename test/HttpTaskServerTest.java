@@ -1,4 +1,6 @@
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,13 +23,18 @@ public class HttpTaskServerTest {
 
     private static HttpTaskServer server;
     private static HttpClient client;
-    private static final Gson gson = new Gson();
+    private static Gson gson = new Gson();
 
     @BeforeAll
     static void setUp() throws IOException {
         server = new HttpTaskServer();
         server.start();
         client = HttpClient.newHttpClient();
+        gson = new GsonBuilder()
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .setPrettyPrinting()
+                .create();
     }
 
     @AfterAll
@@ -127,5 +140,41 @@ public class HttpTaskServerTest {
 
         assertEquals(405, response.statusCode());
         assertEquals("\"Метод не поддерживается\"", response.body());
+    }
+
+    static class DurationAdapter extends TypeAdapter<Duration> {
+        @Override
+        public void write(JsonWriter out, Duration value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(value.toString());
+            }
+        }
+
+        @Override
+        public Duration read(JsonReader in) throws IOException {
+            String durationString = in.nextString();
+            return Duration.parse(durationString);
+        }
+    }
+
+    static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
+        private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        @Override
+        public void write(JsonWriter out, LocalDateTime value) throws IOException {
+            if (value == null) {
+                out.nullValue();
+            } else {
+                out.value(value.format(FORMATTER));
+            }
+        }
+
+        @Override
+        public LocalDateTime read(JsonReader in) throws IOException {
+            String value = in.nextString();
+            return LocalDateTime.parse(value, FORMATTER);
+        }
     }
 }
